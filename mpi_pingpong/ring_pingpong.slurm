@@ -1,6 +1,5 @@
 #!/bin/bash
 #SBATCH -J RingPingPong
-#SBATCH -N 4
 #SBATCH --ntasks-per-node=1
 #SBATCH -p hpc
 #SBATCH -t 5
