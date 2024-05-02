@@ -9,19 +9,20 @@
 BASE_DIR=/opt
 NCCL_TESTS_EXE=all_reduce_perf
 
-export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export NCCL_IB_PCI_RELAXED_ORDERING=1
-export NCCL_SOCKET_IFNAME=eth0
-export NCCL_TOPO_FILE=/opt/microsoft/ndv4-topo.xml
-export OMPI_MCA_coll_hcoll_enable=0
-export UCX_IB_PCI_RELAXED_ORDERING=on
-export UCX_NET_DEVICES=eth0
-export UCX_TLS=tcp
-export NCCL_DEBUG=INFO
-export LD_LIBRARY_PATH=/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH
+# export CUDA_DEVICE_ORDER=PCI_BUS_ID
+# export NCCL_IB_PCI_RELAXED_ORDERING=1
+# export NCCL_SOCKET_IFNAME=eth0
+# export NCCL_TOPO_FILE=/opt/microsoft/ndv4-topo.xml
+# export OMPI_MCA_coll_hcoll_enable=0
+# export UCX_IB_PCI_RELAXED_ORDERING=on
+# export UCX_NET_DEVICES=eth0
+# export UCX_TLS=tcp
+# export NCCL_DEBUG=INFO
+# export LD_LIBRARY_PATH=/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH
 
 source /etc/profile.d/modules.sh
-module load mpi/hpcx
+module avail
+module load mpi/hpcx-pmix
 
 PIN_MASK='ffffff000000,ffffff000000,ffffff,ffffff,ffffff000000000000000000,ffffff000000000000000000,ffffff000000000000,ffffff000000000000'
 
