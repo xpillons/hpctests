@@ -25,7 +25,7 @@ module load mpi/hpcx
 
 PIN_MASK='ffffff000000,ffffff000000,ffffff,ffffff,ffffff000000000000000000,ffffff000000000000000000,ffffff000000000000,ffffff000000000000'
 
-srun -vv --mpi=pmix \
+srun --mpi=pmix \
     --cpu-bind=mask_cpu:$PIN_MASK \
     --gpus-per-node=8 \
     --ntasks-per-node=8 \
