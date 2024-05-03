@@ -5,6 +5,7 @@
 #SBATCH --gpus-per-node=8
 #SBATCH --mem=0
 #SBATCH --exclusive
+#SBATCH -o %x_%j.log
 
 BASE_DIR=/opt
 NCCL_TESTS_EXE=all_reduce_perf
@@ -16,17 +17,20 @@ NCCL_TESTS_EXE=all_reduce_perf
 # export OMPI_MCA_coll_hcoll_enable=0
 # export UCX_IB_PCI_RELAXED_ORDERING=on
 # export UCX_NET_DEVICES=eth0
-# export UCX_TLS=tcp
-# export NCCL_DEBUG=INFO
-# export LD_LIBRARY_PATH=/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH
 
 source /etc/profile.d/modules.sh
 module avail
 module load mpi/hpcx-pmix
 
+#export PMIX_MCA_ptl=^usock
+#export PMIX_MCA_psec=none
+#export PMIX_SYSTEM_TMPDIR=/var/empty
+#export PMIX_MCA_gds=hash
+#export HWLOC_COMPONENTS=-opencl
+
 PIN_MASK='ffffff000000,ffffff000000,ffffff,ffffff,ffffff000000000000000000,ffffff000000000000000000,ffffff000000000000,ffffff000000000000'
 
-srun --mpi=pmix \
+srun -vv --mpi=pmix \
     --cpu-bind=mask_cpu:$PIN_MASK \
     --gpus-per-node=8 \
     --ntasks-per-node=8 \
