@@ -6,6 +6,7 @@
 #SBATCH -t 5
 #SBATCH --export=NONE
 #SBATCH --exclusive
+#SBATCH -o %x_%j.log
 
 source /etc/profile.d/modules.sh
 module use /usr/share/Modules/modulefiles

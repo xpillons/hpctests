@@ -5,6 +5,7 @@
 #SBATCH -t 5
 #SBATCH --export=NONE
 #SBATCH --exclusive
+#SBATCH -o %x_%j.log
 
 TYPE=latency
 
