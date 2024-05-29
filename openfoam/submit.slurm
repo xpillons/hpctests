@@ -3,6 +3,7 @@
 #SBATCH --partition=hpc
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=60
+#SBATCH --exclusive
 
 np=$SLURM_NTASKS
 n=$SLURM_NNODES
@@ -14,18 +15,20 @@ ml OpenFOAM/11-foss-2023a
 source $FOAM_BASH
 
 # select the tutorial to run (and give any args required for allrun)
-tutorial_path=incompressible/simpleFoam/drivaerFastback
+tutorial_path=incompressibleFluid/drivaerFastback
 allrun_args="-c $np -m M"
 
 # the location to run the copy of the tutorial
 local_path=$HOME/openfoam_tutorial_runs
-mkdir -p $local_path
+mkdir -pv $local_path
 
 # create the case name - add size and date
 casedir=$local_path/$(basename $tutorial_path)_${n}x${ppn}_$(date +%Y%m%d_%H%M%S)
 
 cp -r $FOAM_TUTORIALS/$tutorial_path $casedir
 
+# the files are only rx, so make them writable on the copy
+chmod +w -R $casedir
 pushd $casedir
 # allow flags to be added to the mpirun command through FOAM_MPIRUN_FLAGS environment variable
 sed -i '/RunFunctions/a source <(declare -f runParallel | sed "s/mpirun/SLURM_EXPORT_ENV=ALL mpirun \\\$FOAM_MPIRUN_FLAGS/g")' Allrun
