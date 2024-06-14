@@ -22,6 +22,8 @@ pip install accelerate
 cd examples/text_to_image
 pip install -r requirements.txt
 
+source ~/.bashrc
+
 accelerate launch --mixed_precision="fp16" train_text_to_image.py \
                   --pretrained_model_name_or_path=$MODEL_NAME \
                   --dataset_name=$DATASET_NAME \
