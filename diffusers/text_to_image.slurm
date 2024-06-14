@@ -1,3 +1,4 @@
+#!/bin/bash
 #SBATCH --job-name=text2image
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1          # crucial - only 1 task per dist per node!
@@ -6,7 +7,7 @@
 #SBATCH --partition=gpu
 #SBATCH --output=~/%x-%j.out
 
-set -x -e
+set -xe
  
 export MODEL_NAME="CompVis/stable-diffusion-v1-4"
 export DATASET_NAME="lambdalabs/naruto-blip-captions"
