@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=24
 #SBATCH --gres=gpu:1
 #SBATCH --partition=gpu
-#SBATCH --output=~/logs/%x-%j.out
+#SBATCH --output=~/%x-%j.out
 
 set -x -e
  
