@@ -6,15 +6,22 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=gpu
 #SBATCH --output=%x-%j.out
+#SBATCH --container-image nvcr.io\#nvidia/pytorch:24.03-py3
 set -xe
 
 export MODEL_NAME="CompVis/stable-diffusion-v1-4"
 export DATASET_NAME="lambdalabs/naruto-blip-captions"
 
-source ~/.bashrc
-source ~/miniconda/bin/activate
+#source ~/.bashrc
+#source ~/miniconda/bin/activate
 
-cd ~/diffusers/examples/text_to_image
+cd ~/diffusers/
+pip install .
+pip install accelerate
+
+cd examples/text_to_image
+pip install -r requirements.txt
+
 accelerate launch --mixed_precision="fp16" train_text_to_image.py \
                   --pretrained_model_name_or_path=$MODEL_NAME \
                   --dataset_name=$DATASET_NAME \
