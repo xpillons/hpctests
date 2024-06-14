@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cd ~
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda-installer.sh
+bash miniconda-installer.sh -b -p miniconda
+source miniconda/bin/activate
+
+git clone https://github.com/huggingface/diffusers
+cd diffusers
+pip install .
+pip install accelerate
+
+cd examples/text_to_image
+pip install -r requirements.txt
