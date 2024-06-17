@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# None of the containers provided here https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/overview.html seems to works !!!
+
 #SBATCH --job-name=text2image
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1          # crucial - only 1 task per dist per node!
@@ -6,7 +9,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=gpu
 #SBATCH --output=%x-%j.out
-#SBATCH --container-image nvcr.io\#nvidia/pytorch:24.03-py3
+#SBATCH --container-image nvcr.io\#nvidia/pytorch:24.05-py3
 set -xe
 
 export MODEL_NAME="CompVis/stable-diffusion-v1-4"
@@ -22,9 +25,12 @@ pip install accelerate
 cd examples/text_to_image
 pip install -r requirements.txt
 
+#torchtext 0.17.0a0 requires torch==2.3.0a0+40ec155e58, but you have torch 2.3.0a0+40ec155e58.nv24.3 which is incompatible
+
 accelerate launch --mixed_precision="fp16" train_text_to_image.py \
                   --pretrained_model_name_or_path=$MODEL_NAME \
                   --dataset_name=$DATASET_NAME \
+                  --multi_gpu \
                   --use_ema \
                   --resolution=512 \
                   --center_crop \

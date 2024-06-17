@@ -4,7 +4,9 @@ cd ~
 
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda-installer.sh
 bash miniconda-installer.sh -b -p miniconda
-source miniconda/bin/activate
+#source miniconda/bin/activate
+conda create -n python38 python=3.8
+conda activate python38
 
 git clone https://github.com/huggingface/diffusers
 cd diffusers
