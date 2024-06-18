@@ -12,8 +12,9 @@ export MODEL_NAME="CompVis/stable-diffusion-v1-4"
 export DATASET_NAME="lambdalabs/naruto-blip-captions"
 
 source ~/.bashrc
-#source ~/miniconda/bin/activate
-conda activate python38
+source ~/miniconda/bin/activate python38
+
+# This is not scaling on multi_gpu, use the LORA example instead
 
 cd ~/diffusers/examples/text_to_image
 accelerate launch --mixed_precision="fp16" --multi_gpu train_text_to_image.py \
