@@ -27,6 +27,7 @@ module load mpi/impi-2021
 
 export I_MPI_DEBUG=5
 export I_MPI_HYDRA_BOOTSTRAP=slurm
+export I_MPI_HYDRA_IFACE=eth0
 
 IMB_ROOT=$I_MPI_ROOT/bin
 
