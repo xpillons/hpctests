@@ -1,6 +1,6 @@
 #!/bin/bash
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-NODEDEF=$(grep "Nodename=ccsw-gpu-" /sched/ccsw/azure.conf | xargs)
+NODEDEF=$(grep "Nodename=ccw-gpu-" /sched/ccw/azure.conf | xargs)
 CORES=$(echo $NODEDEF | cut -d' ' -f4 | cut -d '=' -f2)
 THREADS_PER_CORE=$(echo $NODEDEF | cut -d' ' -f5 | cut -d '=' -f2)
 GPUS=$(echo $NODEDEF | cut -d' ' -f7 | cut -d '=' -f2 | cut -d':' -f2)
