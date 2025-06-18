@@ -12,8 +12,8 @@ NB_GPUS=$(nvidia-smi -L | wc -l)
 source ~/.bashrc
 source ~/miniconda/bin/activate python38
 
-cd ~/diffusers/examples/text_to_image
-accelerate launch --mixed_precision="fp16" --num_processes=$NB_GPUS train_text_to_image_lora.py \
+EXAMPLE_DIR=~/diffusers/examples/text_to_image
+accelerate launch --mixed_precision="fp16" --num_processes=$NB_GPUS $EXAMPLE_DIR/train_text_to_image_lora.py \
                   --pretrained_model_name_or_path=$MODEL_NAME \
                   --dataset_name=$DATASET_NAME --caption_column="text" \
                   --resolution=512 --random_flip \

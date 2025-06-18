@@ -8,7 +8,7 @@ source miniconda/bin/activate
 conda create -n python38 python=3.8
 conda activate python38
 
-git clone https://github.com/huggingface/diffusers
+git clone https://github.com/huggingface/diffusers -b v0.29.2
 cd diffusers
 pip install .
 pip install accelerate
