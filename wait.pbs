@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -N Wait
+#PBS -l select=1:slot_type=execute
+#PBS -k oed
+#PBS -j oe
+
+echo "Running on nodes"
+cat $PBS_NODEFILE
+sleep 3600s
+echo "Finished"
