@@ -1,9 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name drivaer
-#SBATCH --ntasks-per-node=96
+##SBATCH --ntasks-per-node=96
 #SBATCH --exclusive
 
-np=$SLURM_NTASKS
+# Number of tasks per node, default to all cores on the node
+np=${SLURM_NTASKS:-$SLURM_CPUS_ON_NODE}
 n=$SLURM_NNODES
 ppn=$SLURM_CPUS_ON_NODE
 
