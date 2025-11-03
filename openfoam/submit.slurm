@@ -11,7 +11,11 @@ log_with_timestamp() {
 log_with_timestamp "Job started on $(hostname) with SLURM_JOB_ID=$SLURM_JOB_ID"
 
 # Number of tasks per node, default to all cores on the node
-np=${SLURM_NTASKS:-$SLURM_CPUS_ON_NODE}
+if [ -n "${SLURM_NTASKS:-}" ]; then
+    np=$SLURM_NTASKS
+else
+    np=$((SLURM_NNODES * SLURM_CPUS_ON_NODE))
+fi
 n=$SLURM_NNODES
 ppn=$SLURM_CPUS_ON_NODE
 
@@ -26,7 +30,11 @@ log_with_timestamp "OpenFOAM environment loaded successfully"
 
 # select the tutorial to run (and give any args required for allrun)
 tutorial_path=incompressibleFluid/drivaerFastback
-allrun_args="-c $np -m M" # -m M for Medium or L for large model
+# - S: small, 440k cells
+# - M: medium, 3M cells (default)
+# - L: large, 22.5M cells
+# - XL: extra large, ~200M cells
+allrun_args="-c $np -m M"
 
 # the location to run the copy of the tutorial
 local_path=$HOME/openfoam_tutorial_runs
