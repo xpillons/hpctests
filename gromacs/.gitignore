@@ -1,0 +1,11 @@
+# Benchmark input data (large binary files)
+benchPEP-h
+benchPEP-h.tpr
+
+# Run results directories
+results/
+
+# Execution logs
+*.out
+*.err
+*.log
