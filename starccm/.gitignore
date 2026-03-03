@@ -1,0 +1,9 @@
+# Execution logs (stdout/stderr from job scheduler)
+*.out
+*.err
+
+# Run output directories
+runs/
+
+# Backup files
+*.bak

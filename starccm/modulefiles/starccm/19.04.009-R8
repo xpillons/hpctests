@@ -1,0 +1,26 @@
+#%Module 1.0
+##
+## Simcenter STAR-CCM+ 2406.0001 Build 19.04.009
+## linux-x86_64-2.28/clang17.0-r8 Double Precision
+##
+
+proc ModulesHelp {} {
+    puts stderr "Simcenter STAR-CCM+ 2406.0001 Build 19.04.009"
+    puts stderr "(linux-x86_64-2.28/clang17.0-r8 Double Precision)"
+    puts stderr ""
+    puts stderr "Sets up environment for STAR-CCM+ 19.04.009-R8"
+}
+
+module-whatis "Simcenter STAR-CCM+ 2406.0001 Build 19.04.009 (clang17.0-r8 Double Precision)"
+
+conflict starccm
+
+set              version      19.04.009-R8
+set              basedir      /shared/apps/starccm
+set              prefix       $basedir/$version/STAR-CCM+19.04.009-R8
+
+setenv           STARCCM_DIR  $prefix
+setenv           CDLMD_LICENSE_FILE  28000@10.18.0.11
+
+prepend-path     PATH         $prefix/star/bin
+prepend-path     LD_LIBRARY_PATH  $prefix/star/lib
