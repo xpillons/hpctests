@@ -1,6 +1,6 @@
 ---
 name: oodapp
-description: How to build Open OnDemand custom applications
+description: "Use when building, creating, or debugging Open OnDemand (OOD) batch connect applications, sandbox apps, form.yml, submit.yml.erb, or script.sh.erb files"
 ---
 
 # Open OnDemand Application Development
