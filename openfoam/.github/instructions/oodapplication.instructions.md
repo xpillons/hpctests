@@ -1,6 +1,7 @@
 ---
 name: oodapp
 description: "Use when building, creating, or debugging Open OnDemand (OOD) batch connect applications, sandbox apps, form.yml, submit.yml.erb, or script.sh.erb files"
+applyTo: "**/ondemand/dev/**"
 ---
 
 # Open OnDemand Application Development
@@ -26,7 +27,11 @@ An OOD batch connect app requires these files:
     └── script.sh.erb      # Job script executed on compute node (ERB template, MUST be chmod +x)
 ```
 
-Use predefined attributes where possible to leverage built-in OOD features (e.g. `bc_num_hours`, `bc_num_nodes`). 
+Use predefined attributes where possible to leverage built-in OOD features (e.g. `bc_num_hours`, `bc_num_nodes`).
+
+## Critical: Manifest Must Include `role`
+
+The `manifest.yml` file **must** include `role: batch_connect` for any batch connect application. Without this field, OOD will not display the app in the dashboard. The manifest must contain at minimum: `name`, `role`, and `category`. 
 
 Available global form items (defined in `/etc/ood/config/ondemand.d/global_bc_items.yml`):
 - **global_ccw_clusters** — hidden field, value `slurm_ccw`
@@ -45,6 +50,47 @@ The `template/script.sh.erb` file **must have the execute bit set** (`chmod +x t
 If the job script relies on `$SLURM_NTASKS` (e.g. to pass a core count to `Allrun -c`), you **must** include `--ntasks-per-node=<N>` in the scheduler native args. Without it, Slurm does not set `SLURM_NTASKS` and the variable expands to an empty string, causing argument parsing failures in the job script.
 
 For the **hpc** partition, use `--ntasks-per-node=176`.
+
+## Critical: Passing Custom Form Variables to the Job Script
+
+Custom form attributes (any attribute that is **not** a predefined `bc_*` or `global_*` field) are **not** available as Ruby variables inside `template/script.sh.erb`. The ERB template context for `script.sh.erb` only exposes a limited set of built-in variables.
+
+To make custom attributes available in the job script:
+
+1. **`submit.yml.erb`** — export them via `job_environment`:
+   ```yaml
+   script:
+     job_environment:
+       MY_VAR: "<%= my_var %>"
+   ```
+2. **`template/script.sh.erb`** — reference them as shell environment variables (`$MY_VAR`), **never** as ERB expressions (`<%= my_var %>`).
+
+This applies to **every** custom form field. If the job script accepts N arguments derived from form fields, all N must appear in `job_environment`.
+
+## Critical: `submit.yml.erb` Overwrites Native Array from `bc_num_nodes`
+
+When `submit.yml.erb` defines a `native` array, it **replaces** (not merges with) any native args contributed by smart attributes like `bc_num_nodes`. This means:
+
+- **`bc_num_hours`** — safe, uses scalar `wall_time` key. Do **not** add `--time` to `native`.
+- **`bc_num_nodes`** — **must** be re-included as `-N` in `native`, otherwise Slurm defaults to 1 node.
+
+Use the same ERB block pattern as the reference app `bc_vscode`:
+
+```erb
+# submit.yml.erb
+<%-
+scheduler_args = ["-N", bc_num_nodes]
+scheduler_args += ["-p", global_ccw_queues]
+scheduler_args += ["--ntasks-per-node=176"]
+scheduler_args += ["--exclusive"]
+-%>
+
+script:
+  native:
+  <%- scheduler_args.each do |arg| %>
+    - "<%= arg %>"
+  <%- end %>
+```
 
 ## Existing Reference Apps
 - `/var/www/ood/apps/sys/bc_vscode` — VSCode on compute node (uses `global_ccw_clusters`, `global_ccw_queues`, Slurm submission)

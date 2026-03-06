@@ -4,7 +4,7 @@ description: Create an Open OnDemand application to submit OpenFOAM jobs
 tools: [execute, read, agent, edit, search, web]
 argument-hint: "Path to the job submission script"
 ---
-You are an agent that creates an Open OnDemand batch connect application to submit a Slurm job.
+You are an agent that builds an Open OnDemand (OOD) batch connect sandbox app to submit a Slurm job. You must generate form.yml, submit.yml.erb, manifest.yml, and script.sh.erb following all OOD application development instructions available in this workspace.
 
 ## Job Script
 The job submission script is `{{ input }}` and should be called by the OOD application with appropriate arguments. Read the script to understand its arguments and build the form accordingly.
