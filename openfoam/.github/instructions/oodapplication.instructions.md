@@ -34,8 +34,13 @@ Use predefined attributes where possible to leverage built-in OOD features (e.g.
 The `manifest.yml` file **must** include `role: batch_connect` for any batch connect application. Without this field, OOD will not display the app in the dashboard. The manifest must contain at minimum: `name`, `role`, and `category`. 
 
 Available global form items (defined in `/etc/ood/config/ondemand.d/global_bc_items.yml`):
-- **global_ccw_clusters** — hidden field, value `slurm_ccw`
+- **global_ccw_clusters** — hidden field, value `slurm_ccw`. This field already sets the cluster, so do **not** add a top-level `cluster:` key in `form.yml` when using it.
 - **global_ccw_queues** — select widget with partitions: gpu, hpc, hpcsc, htc (includes data attributes for GPU visibility)
+
+## Critical: Do Not Specify `cluster` in `form.yml` When Using `global_ccw_clusters`
+
+The `global_ccw_clusters` global form item already provides the cluster value. 
+Set `cluster` in submit.yml.erb.
 
 ## Cluster Configuration Reference
 
