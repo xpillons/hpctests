@@ -1,0 +1,73 @@
+#!/bin/bash
+
+log() {
+    local level="$1"
+    shift
+    local message="$*"
+    local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+    echo "[$timestamp] [$level] $message"
+}
+
+# ---- Environment from OOD form (inlined at render time) ----
+export MODEL="<%= context.model_path %>"
+export MPI="<%= context.mpi_driver %>"
+export FABRIC="<%= context.fabric %>"
+export CPUBIND="<%= context.cpubind %>"
+export STARCCM_HPCX="<%= context.starccm_hpcx == "1" ? "1" : "" %>"
+export BATCH_MACRO="<%= context.batch_macro %>"
+export MPPFLAGS="<%= context.mppflags %>"
+
+# ---- Fix OOD Slurm/MPI environment conflicts ----
+# OOD submits with --export=NONE which prevents env propagation to remote nodes.
+# It also sets OMPI MCA params that conflict with StarCCM+'s internal mpirun.
+unset SLURM_EXPORT_ENV
+unset OMPI_MCA_plm_slurm_args
+
+# ---- Set working directory for StarCCM+ (avoids running from OOD staging) ----
+export WORKDIR="$HOME/starccm"
+mkdir -p "${WORKDIR}"
+
+# ---- StarCCM+ repository location ----
+STARCCM_REPO="<%= File.join(Dir.home, "hpctests", "starccm") %>"
+STARCCM_SCRIPT="${STARCCM_REPO}/starccm.slurm"
+
+# ---- Validate inputs ----
+if [ -z "${MODEL:-}" ]; then
+    log "ERROR" "MODEL environment variable is not set"
+    exit 1
+fi
+
+if [ ! -f "${MODEL}" ]; then
+    log "ERROR" "Model file not found: ${MODEL}"
+    exit 1
+fi
+
+if [ ! -f "${STARCCM_SCRIPT}" ]; then
+    log "ERROR" "StarCCM+ script not found: ${STARCCM_SCRIPT}"
+    exit 1
+fi
+
+# ---- Link modulefiles into submission directory ----
+# starccm.slurm derives SCRIPT_DIR from scontrol, which points to the Slurm
+# spool directory when launched via OOD. Pre-register the modulefiles path
+# so the module is already available regardless of what scontrol resolves to.
+module use "${STARCCM_REPO}/modulefiles"
+
+log "INFO" "============================================="
+log "INFO" "Job ID       : $SLURM_JOB_ID"
+log "INFO" "Nodes        : ${SLURM_JOB_NUM_NODES} ($SLURM_JOB_NODELIST)"
+log "INFO" "Tasks/node   : ${SLURM_NTASKS_PER_NODE}"
+log "INFO" "Model        : ${MODEL}"
+log "INFO" "MPI driver   : ${MPI:-openmpi}"
+log "INFO" "Fabric       : ${FABRIC:-auto}"
+log "INFO" "CPU bind     : ${CPUBIND:-bandwidth}"
+log "INFO" "HPCX         : ${STARCCM_HPCX:-disabled}"
+log "INFO" "Batch macro  : ${BATCH_MACRO:-run}"
+log "INFO" "MPI flags    : ${MPPFLAGS:-none}"
+log "INFO" "Script       : ${STARCCM_SCRIPT}"
+log "INFO" "============================================="
+
+# ---- Run the StarCCM+ script ----
+bash "${STARCCM_SCRIPT}"
+
+log "INFO" "StarCCM+ job completed"

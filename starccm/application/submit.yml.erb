@@ -1,0 +1,18 @@
+---
+cluster: "<%= global_ccw_clusters %>"
+<%-
+scheduler_args = ["-N", bc_num_nodes]
+scheduler_args += ["-p", global_ccw_queues]
+scheduler_args += ["--ntasks-per-node=176"]
+scheduler_args += ["--exclusive"]
+scheduler_args += ["--hint=nomultithread"]
+-%>
+
+batch_connect:
+  template: "basic"
+
+script:
+  native:
+  <%- scheduler_args.each do |arg| %>
+    - "<%= arg %>"
+  <%- end %>

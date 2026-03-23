@@ -1,0 +1,7 @@
+---
+name: StarCCM+
+category: HPC Jobs
+subcategory: CFD
+role: batch_connect
+description: |
+  Submit a Simcenter STAR-CCM+ batch job via Slurm.

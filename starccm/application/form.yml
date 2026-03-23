@@ -1,0 +1,90 @@
+---
+form:
+  - global_ccw_clusters
+  - global_ccw_queues
+  - bc_num_hours
+  - bc_num_nodes
+  - model_path
+  - mpi_driver
+  - fabric
+  - cpubind
+  - starccm_hpcx
+  - batch_macro
+  - mppflags
+
+attributes:
+  bc_num_hours:
+    value: 8
+
+  bc_num_nodes:
+    widget: "number_field"
+    label: "Number of Nodes"
+    value: 2
+    min: 1
+    max: 16
+    step: 1
+
+  model_path:
+    widget: "path_selector"
+    label: "Model File (.sim)"
+    required: true
+    directory: "/shared/apps/starccm/models"
+    show_files: true
+    show_hidden: false
+    favorites:
+      - ["/shared/apps/starccm/models", "StarCCM+ Models"]
+    help: "Select the .sim model file"
+
+  mpi_driver:
+    widget: "select"
+    label: "MPI Driver"
+    value: "openmpi"
+    help: "MPI implementation to use"
+    options:
+      - ["OpenMPI", "openmpi"]
+      - ["Intel MPI", "intel"]
+
+  fabric:
+    widget: "select"
+    label: "Network Fabric"
+    value: ""
+    help: "Network fabric (leave Auto for automatic detection)"
+    options:
+      - ["Auto", ""]
+      - ["ibv (InfiniBand Verbs)", "ibv"]
+      - ["ucx (Unified Communication X)", "ucx"]
+      - ["ofi (OpenFabrics Interfaces)", "ofi"]
+      - ["tcp", "tcp"]
+
+  cpubind:
+    widget: "select"
+    label: "CPU Binding"
+    value: "bandwidth"
+    help: "CPU binding mode for StarCCM+"
+    options:
+      - ["Bandwidth (default)", "bandwidth"]
+      - ["Off", "off"]
+      - ["Auto", "auto"]
+
+  starccm_hpcx:
+    widget: "check_box"
+    label: "Enable HPCX"
+    value: 0
+    help: "Load system HPCX module (recommended for multi-node runs)"
+
+  batch_macro:
+    widget: "path_selector"
+    label: "Batch Macro"
+    value: "run"
+    directory: "/shared/home"
+    show_files: true
+    show_hidden: false
+    favorites:
+      - ["/shared/home", "Home"]
+    help: "Batch target: type 'run' (default) or browse to a .java macro file"
+
+  mppflags:
+    widget: "text_field"
+    label: "Extra MPI Flags"
+    value: ""
+    help: "Optional extra MPI flags (e.g. --map-by ppr:44:numa --bind-to core)"
