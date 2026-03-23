@@ -52,7 +52,7 @@ The `template/script.sh.erb` file **must have the execute bit set** (`chmod +x t
 
 ## Critical: Slurm Task Count in `submit.yml.erb`
 
-If the job script relies on `$SLURM_NTASKS` (e.g. to pass a core count to `Allrun -c`), you **must** include `--ntasks-per-node=<N>` in the scheduler native args. Without it, Slurm does not set `SLURM_NTASKS` and the variable expands to an empty string, causing argument parsing failures in the job script.
+If the job script relies on `$SLURM_NTASKS`, you **must** include `--ntasks-per-node=<N>` in the scheduler native args. Without it, Slurm does not set `SLURM_NTASKS` and the variable expands to an empty string, causing argument parsing failures in the job script.
 
 For the **hpc** partition, use `--ntasks-per-node=176`.
 
