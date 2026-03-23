@@ -22,6 +22,7 @@
 #   MPPFLAGS      Extra MPI flags (e.g. "--map-by ppr:44:numa --bind-to core")
 #   UCX_TLS       UCX transport override (e.g. "rc,sm")
 #   UCX_ENVS      Space-separated KEY=VALUE pairs for UCX tuning
+#   BATCH_MACRO   Batch target: "run" (default) or path to a .java macro
 #
 # Examples:
 #   MODEL=/path/to/model.sim sbatch starccm.slurm
@@ -45,6 +46,7 @@ UCX_ENVS=${UCX_ENVS:-}
 MPPFLAGS=${MPPFLAGS:-}
 XSYSTEMUCX=${XSYSTEMUCX:-}
 STARCCM_HPCX=${STARCCM_HPCX:-}
+BATCH_MACRO=${BATCH_MACRO:-run}
 
 # --- Validate MPI driver -----------------------------------------------------
 case "${MPI}" in
@@ -56,7 +58,10 @@ case "${MPI}" in
 esac
 
 # --- Load environment module -------------------------------------------------
-MODULEFILE_DIR="${SLURM_SUBMIT_DIR}/modulefiles"
+# Resolve the original script directory (Slurm copies scripts to a spool, so
+# BASH_SOURCE points to the temp copy; query scontrol for the real path).
+SCRIPT_DIR="$(cd "$(dirname "$(scontrol show job "${SLURM_JOB_ID}" | awk -F= '/Command=/{print $2}')")" && pwd)"
+MODULEFILE_DIR="${SCRIPT_DIR}/modulefiles"
 module use "${MODULEFILE_DIR}"
 module load starccm
 echo "Loaded module: $(module list 2>&1 | grep starccm)"
@@ -73,7 +78,11 @@ fi
 if [ "${MPI}" = "intel" ]; then
     module load mpi/impi-2021
     echo "Loaded Intel MPI: $(module list 2>&1 | grep impi)"
-    export I_MPI_HYDRA_BOOTSTRAP=ssh
+    # Force fork bootstrap — the bundled hydra_bstrap_proxy crashes on this system
+    export I_MPI_HYDRA_BOOTSTRAP=fork
+    unset I_MPI_HYDRA_BOOTSTRAP_EXEC
+    unset I_MPI_HYDRA_BOOTSTRAP_EXEC_EXTRA_ARGS
+    # Use system Intel MPI libfabric instead of bundled 1.13 (SIGSEGV on current OFED)
     SYSTEM_IMPI_LIBFABRIC=/opt/intel/oneapi/mpi/2021.16/opt/mpi/libfabric
     export I_MPI_OFI_LIBRARY_INTERNAL=0
     export FI_PROVIDER_PATH="${SYSTEM_IMPI_LIBFABRIC}/lib/prov"
@@ -81,7 +90,7 @@ if [ "${MPI}" = "intel" ]; then
 fi
 
 # --- Working directory --------------------------------------------------------
-WORKDIR="${SLURM_SUBMIT_DIR}"
+WORKDIR="${WORKDIR:-${SLURM_SUBMIT_DIR}}"
 cd "${WORKDIR}"
 
 # --- Generate machinefile -----------------------------------------------------
@@ -153,7 +162,7 @@ if [ "${XSYSTEMUCX:-}" = "1" ]; then
     CMD+=(-xsystemucx)
 fi
 
-CMD+=(-batch run "${MODEL}")
+CMD+=(-batch "${BATCH_MACRO}" "${MODEL}")
 
 echo "Command: ${CMD[*]}"
 "${CMD[@]}"
